@@ -1,0 +1,5 @@
+S:/Code/C_++/Tmp/stack_call/build/CMakeFiles/stackcall.dir
+S:/Code/C_++/Tmp/stack_call/build/CMakeFiles/assemble_nasm.dir
+S:/Code/C_++/Tmp/stack_call/build/CMakeFiles/custom_clean.dir
+S:/Code/C_++/Tmp/stack_call/build/CMakeFiles/ALL_BUILD.dir
+S:/Code/C_++/Tmp/stack_call/build/CMakeFiles/ZERO_CHECK.dir

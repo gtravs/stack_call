@@ -1,0 +1,24 @@
+^S:\CODE\C_++\TMP\STACK_CALL\BUILD\CMAKEFILES\81B4243A9F93C2DED29042B47E9AB8DD\CUSTOM_CLEAN.RULE
+setlocal
+V:\App\cmake\bin\cmake.exe -E remove -f S:/Code/C_++/Tmp/stack_call/build/bin/stackcall.exe
+if %errorlevel% neq 0 goto :cmEnd
+V:\App\cmake\bin\cmake.exe -E remove -f S:/Code/C_++/Tmp/stack_call/build/bin/WorkCallback.obj
+if %errorlevel% neq 0 goto :cmEnd
+V:\App\cmake\bin\cmake.exe -E remove -f S:/Code/C_++/Tmp/stack_call/build/CMakeFiles/stackcall.dir/main.c.obj
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\CODE\C_++\TMP\STACK_CALL\CMAKELISTS.TXT
+setlocal
+V:\App\cmake\bin\cmake.exe -SS:/Code/C_++/Tmp/stack_call -BS:/Code/C_++/Tmp/stack_call/build --check-stamp-file S:/Code/C_++/Tmp/stack_call/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

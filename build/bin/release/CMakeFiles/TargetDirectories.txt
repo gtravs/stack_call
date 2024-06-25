@@ -1,0 +1,4 @@
+S:/Code/C_++/Tmp/stack_call/build/bin/release/CMakeFiles/stackcall.dir
+S:/Code/C_++/Tmp/stack_call/build/bin/release/CMakeFiles/custom_clean.dir
+S:/Code/C_++/Tmp/stack_call/build/bin/release/CMakeFiles/edit_cache.dir
+S:/Code/C_++/Tmp/stack_call/build/bin/release/CMakeFiles/rebuild_cache.dir

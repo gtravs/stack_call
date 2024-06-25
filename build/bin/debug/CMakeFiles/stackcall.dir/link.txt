@@ -1,0 +1,3 @@
+V:\App\CLion\bin\cmake\win\x64\bin\cmake.exe -E rm -f CMakeFiles\stackcall.dir/objects.a
+V:\App\mingw\mingw64\bin\ar.exe qc CMakeFiles\stackcall.dir/objects.a @CMakeFiles\stackcall.dir\objects1.rsp
+gcc -g -nostartfiles -Wl,-eSetup  -lkernel32 -luser32  -Wl,--whole-archive CMakeFiles\stackcall.dir/objects.a -Wl,--no-whole-archive -o bin\stackcall.exe -Wl,--out-implib,libstackcall.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\stackcall.dir\linkLibs.rsp

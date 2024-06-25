@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="S:\Code\C_++\Tmp\stack_call\build\CMakeFiles\1296f8c1e235a5f9c2fe1dc089482aa1\WorkCallback.obj.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\Code\C_++\Tmp\stack_call\build\CMakeFiles\81b4243a9f93c2ded29042b47e9ab8dd\assemble_nasm.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\Code\C_++\Tmp\stack_call\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="S:\Code\C_++\Tmp\stack_call\build\CMakeFiles\assemble_nasm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{F8368DE1-2A41-326B-B6B0-234E0763BEB5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

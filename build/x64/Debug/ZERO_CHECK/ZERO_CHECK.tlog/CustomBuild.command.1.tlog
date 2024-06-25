@@ -1,0 +1,10 @@
+^S:\CODE\C_++\TMP\STACK_CALL\BUILD\CMAKEFILES\81B4243A9F93C2DED29042B47E9AB8DD\GENERATE.STAMP.RULE
+setlocal
+V:\App\cmake\bin\cmake.exe -SS:/Code/C_++/Tmp/stack_call -BS:/Code/C_++/Tmp/stack_call/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file S:/Code/C_++/Tmp/stack_call/build/stack_call.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
