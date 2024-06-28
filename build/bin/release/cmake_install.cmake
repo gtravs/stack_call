@@ -1,4 +1,4 @@
-# Install script for directory: S:/Code/C_++/Tmp/stack_call
+# Install script for directory: S:/Code/C_++/PayloadCode/proxy_call_shellcode
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "S:/Code/C_++/Tmp/stack_call/build/bin/release/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

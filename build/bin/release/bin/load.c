@@ -27,7 +27,7 @@ char* read_binary_file(const char* filename, size_t* size) {
 
 int main() {
     size_t size;
-    char* shellcode = read_binary_file("text_section.bin", &size);
+    char* shellcode = read_binary_file("shellcode.bin", &size);
 
     // 为 shellcode 分配可执行内存
     void* exec_mem = VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);

