@@ -1,4 +1,4 @@
-V:\App\CLion\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=V:/App/mingw/mingw64/bin/mingw32-make.exe -DCMAKE_C_COMPILER=V:/App/mingw/mingw64/bin/gcc.exe -DCMAKE_CXX_COMPILER=V:/App/mingw/mingw64/bin/g++.exe -G "CodeBlocks - MinGW Makefiles" -S S:\Code\C_++\Tmp\stack_call -B S:\Code\C_++\Tmp\stack_call\build\bin\debug
+V:\App\CLion\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=V:/App/mingw/mingw64/bin/mingw32-make.exe -DCMAKE_C_COMPILER=V:/App/mingw/mingw64/bin/gcc.exe -DCMAKE_CXX_COMPILER=V:/App/mingw/mingw64/bin/g++.exe -G "CodeBlocks - MinGW Makefiles" -S S:\Code\C_++\PayloadCode\proxy_call_shellcode -B S:\Code\C_++\PayloadCode\proxy_call_shellcode\build\bin\debug
 CMake Deprecation Warning:
   Support for "Extra Generators" like
 
@@ -10,4 +10,4 @@ CMake Deprecation Warning:
 
 -- Configuring done (0.1s)
 -- Generating done (0.0s)
--- Build files have been written to: S:/Code/C_++/Tmp/stack_call/build/bin/debug
+-- Build files have been written to: S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/debug

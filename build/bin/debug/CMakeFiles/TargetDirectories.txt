@@ -1,4 +1,4 @@
-S:/Code/C_++/Tmp/stack_call/build/bin/debug/CMakeFiles/stackcall.dir
-S:/Code/C_++/Tmp/stack_call/build/bin/debug/CMakeFiles/custom_clean.dir
-S:/Code/C_++/Tmp/stack_call/build/bin/debug/CMakeFiles/edit_cache.dir
-S:/Code/C_++/Tmp/stack_call/build/bin/debug/CMakeFiles/rebuild_cache.dir
+S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/debug/CMakeFiles/proxy_call.dir
+S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/debug/CMakeFiles/custom_clean.dir
+S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/debug/CMakeFiles/edit_cache.dir
+S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/debug/CMakeFiles/rebuild_cache.dir

@@ -8,17 +8,17 @@
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="S:/Code/C_++/Tmp/stack_call/build/bin/release"/>
+				<Option working_dir="S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="stackcall">
-				<Option output="S:/Code/C_++/Tmp/stack_call/build/bin/release/bin/stackcall.exe" prefix_auto="0" extension_auto="0"/>
+				<Option output="S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/bin/stackcall.exe" prefix_auto="0" extension_auto="0"/>
 				<Option working_dir="bin"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
@@ -32,14 +32,14 @@
 					<Add directory="V:/App/mingw/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/12.2.0/../../../../x86_64-w64-mingw32/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 stackcall"/>
-					<CompileFile command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 stackcall"/>
+					<CompileFile command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="stackcall/fast">
-				<Option output="S:/Code/C_++/Tmp/stack_call/build/bin/release/bin/stackcall.exe" prefix_auto="0" extension_auto="0"/>
+				<Option output="S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/bin/stackcall.exe" prefix_auto="0" extension_auto="0"/>
 				<Option working_dir="bin"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
@@ -53,65 +53,65 @@
 					<Add directory="V:/App/mingw/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/12.2.0/../../../../x86_64-w64-mingw32/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 stackcall/fast"/>
-					<CompileFile command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 stackcall/fast"/>
+					<CompileFile command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="custom_clean">
-				<Option working_dir="S:/Code/C_++/Tmp/stack_call/build/bin/release"/>
+				<Option working_dir="S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 custom_clean"/>
-					<CompileFile command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 custom_clean"/>
+					<CompileFile command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="S:/Code/C_++/Tmp/stack_call/build/bin/release"/>
+				<Option working_dir="S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="S:/Code/C_++/Tmp/stack_call/build/bin/release"/>
+				<Option working_dir="S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/Tmp/stack_call/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="V:/App/mingw/mingw64/bin/mingw32-make.exe -f &quot;S:/Code/C_++/PayloadCode/proxy_call_shellcode/build/bin/release/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="S:/Code/C_++/Tmp/stack_call/includes/PEB.h">
+		<Unit filename="S:/Code/C_++/PayloadCode/proxy_call_shellcode/includes/PEB.h">
 			<Option target="stackcall"/>
 		</Unit>
-		<Unit filename="S:/Code/C_++/Tmp/stack_call/includes/peb_api.h">
+		<Unit filename="S:/Code/C_++/PayloadCode/proxy_call_shellcode/includes/peb_api.h">
 			<Option target="stackcall"/>
 		</Unit>
-		<Unit filename="S:/Code/C_++/Tmp/stack_call/includes/projstructs.h">
+		<Unit filename="S:/Code/C_++/PayloadCode/proxy_call_shellcode/includes/projstructs.h">
 			<Option target="stackcall"/>
 		</Unit>
-		<Unit filename="S:/Code/C_++/Tmp/stack_call/includes/utils.h">
+		<Unit filename="S:/Code/C_++/PayloadCode/proxy_call_shellcode/includes/utils.h">
 			<Option target="stackcall"/>
 		</Unit>
-		<Unit filename="S:/Code/C_++/Tmp/stack_call/peb_api.c">
+		<Unit filename="S:/Code/C_++/PayloadCode/proxy_call_shellcode/peb_api.c">
 			<Option target="stackcall"/>
 		</Unit>
-		<Unit filename="S:/Code/C_++/Tmp/stack_call/stack_call.c">
+		<Unit filename="S:/Code/C_++/PayloadCode/proxy_call_shellcode/stack_call.c">
 			<Option target="stackcall"/>
 		</Unit>
-		<Unit filename="S:/Code/C_++/Tmp/stack_call/utils.c">
+		<Unit filename="S:/Code/C_++/PayloadCode/proxy_call_shellcode/utils.c">
 			<Option target="stackcall"/>
 		</Unit>
-		<Unit filename="S:/Code/C_++/Tmp/stack_call/CMakeLists.txt">
+		<Unit filename="S:/Code/C_++/PayloadCode/proxy_call_shellcode/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>

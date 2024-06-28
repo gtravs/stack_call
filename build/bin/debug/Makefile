@@ -56,10 +56,10 @@ RM = V:\App\CLion\bin\cmake\win\x64\bin\cmake.exe -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = S:\Code\C_++\Tmp\stack_call
+CMAKE_SOURCE_DIR = S:\Code\C_++\PayloadCode\proxy_call_shellcode
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = S:\Code\C_++\Tmp\stack_call\build\bin\debug
+CMAKE_BINARY_DIR = S:\Code\C_++\PayloadCode\proxy_call_shellcode\build\bin\debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -86,9 +86,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start S:\Code\C_++\Tmp\stack_call\build\bin\debug\CMakeFiles S:\Code\C_++\Tmp\stack_call\build\bin\debug\\CMakeFiles\progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start S:\Code\C_++\PayloadCode\proxy_call_shellcode\build\bin\debug\CMakeFiles S:\Code\C_++\PayloadCode\proxy_call_shellcode\build\bin\debug\\CMakeFiles\progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start S:\Code\C_++\Tmp\stack_call\build\bin\debug\CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start S:\Code\C_++\PayloadCode\proxy_call_shellcode\build\bin\debug\CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -116,17 +116,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named stackcall
+# Target rules for targets named proxy_call
 
 # Build rule for target.
-stackcall: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 stackcall
-.PHONY : stackcall
+proxy_call: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 proxy_call
+.PHONY : proxy_call
 
 # fast build rule for target.
-stackcall/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\stackcall.dir\build.make CMakeFiles/stackcall.dir/build
-.PHONY : stackcall/fast
+proxy_call/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\proxy_call.dir\build.make CMakeFiles/proxy_call.dir/build
+.PHONY : proxy_call/fast
 
 #=============================================================================
 # Target rules for targets named custom_clean
@@ -146,7 +146,7 @@ peb_api.obj: peb_api.c.obj
 
 # target to build an object file
 peb_api.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\stackcall.dir\build.make CMakeFiles/stackcall.dir/peb_api.c.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\proxy_call.dir\build.make CMakeFiles/proxy_call.dir/peb_api.c.obj
 .PHONY : peb_api.c.obj
 
 peb_api.i: peb_api.c.i
@@ -154,7 +154,7 @@ peb_api.i: peb_api.c.i
 
 # target to preprocess a source file
 peb_api.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\stackcall.dir\build.make CMakeFiles/stackcall.dir/peb_api.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\proxy_call.dir\build.make CMakeFiles/proxy_call.dir/peb_api.c.i
 .PHONY : peb_api.c.i
 
 peb_api.s: peb_api.c.s
@@ -162,7 +162,7 @@ peb_api.s: peb_api.c.s
 
 # target to generate assembly for a file
 peb_api.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\stackcall.dir\build.make CMakeFiles/stackcall.dir/peb_api.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\proxy_call.dir\build.make CMakeFiles/proxy_call.dir/peb_api.c.s
 .PHONY : peb_api.c.s
 
 stack_call.obj: stack_call.c.obj
@@ -170,7 +170,7 @@ stack_call.obj: stack_call.c.obj
 
 # target to build an object file
 stack_call.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\stackcall.dir\build.make CMakeFiles/stackcall.dir/stack_call.c.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\proxy_call.dir\build.make CMakeFiles/proxy_call.dir/stack_call.c.obj
 .PHONY : stack_call.c.obj
 
 stack_call.i: stack_call.c.i
@@ -178,7 +178,7 @@ stack_call.i: stack_call.c.i
 
 # target to preprocess a source file
 stack_call.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\stackcall.dir\build.make CMakeFiles/stackcall.dir/stack_call.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\proxy_call.dir\build.make CMakeFiles/proxy_call.dir/stack_call.c.i
 .PHONY : stack_call.c.i
 
 stack_call.s: stack_call.c.s
@@ -186,7 +186,7 @@ stack_call.s: stack_call.c.s
 
 # target to generate assembly for a file
 stack_call.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\stackcall.dir\build.make CMakeFiles/stackcall.dir/stack_call.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\proxy_call.dir\build.make CMakeFiles/proxy_call.dir/stack_call.c.s
 .PHONY : stack_call.c.s
 
 utils.obj: utils.c.obj
@@ -194,7 +194,7 @@ utils.obj: utils.c.obj
 
 # target to build an object file
 utils.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\stackcall.dir\build.make CMakeFiles/stackcall.dir/utils.c.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\proxy_call.dir\build.make CMakeFiles/proxy_call.dir/utils.c.obj
 .PHONY : utils.c.obj
 
 utils.i: utils.c.i
@@ -202,7 +202,7 @@ utils.i: utils.c.i
 
 # target to preprocess a source file
 utils.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\stackcall.dir\build.make CMakeFiles/stackcall.dir/utils.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\proxy_call.dir\build.make CMakeFiles/proxy_call.dir/utils.c.i
 .PHONY : utils.c.i
 
 utils.s: utils.c.s
@@ -210,7 +210,7 @@ utils.s: utils.c.s
 
 # target to generate assembly for a file
 utils.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\stackcall.dir\build.make CMakeFiles/stackcall.dir/utils.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\proxy_call.dir\build.make CMakeFiles/proxy_call.dir/utils.c.s
 .PHONY : utils.c.s
 
 # Help Target
@@ -222,7 +222,7 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... custom_clean
-	@echo ... stackcall
+	@echo ... proxy_call
 	@echo ... peb_api.obj
 	@echo ... peb_api.i
 	@echo ... peb_api.s

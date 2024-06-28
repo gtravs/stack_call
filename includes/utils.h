@@ -15,4 +15,6 @@ ULONG CalculateFunctionStackSize(PRUNTIME_FUNCTION pRuntimeFunction, const DWORD
 void * CalculateFunctionStackSizeWrapper(BYTE * ReturnAddress, APIS * api);
 BYTE * find_api_return_address_on_stack(RUNTIME_FUNCTION* api_runtime_function, BYTE * api_virtual_address);
 RUNTIME_FUNCTION* get_runtime_function_entry_for_api( Dll * module, BYTE* api_address);
+VOID memory_copy(PVOID destination_ptr, PVOID source_ptr, DWORD number_of_bytes);
+SIZE_T StringLengthA(LPCSTR String);
 #endif //STACK_CALL_UTILS_H
